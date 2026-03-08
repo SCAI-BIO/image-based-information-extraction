@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "covid-ndd-extraction"
+version = "0.1.0"
+description = "Semantic triple extraction from biomedical images for COVID-19 / NDD research"
+authors = [
+    { name = "Elizaveta Popova" },
+    { name = "Negin Babaiha" },
+]
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "openai>=1.30",
+    "pandas>=2.1",
+    "numpy>=1.26",
+    "torch>=2.1",
+    "transformers>=4.40",
+    "sentence-transformers>=3.0",
+    "scipy>=1.12",
+    "matplotlib>=3.8",
+    "openpyxl>=3.1",
+    "requests>=2.31",
+    "pydantic-settings>=2.2",
+    "typer>=0.12",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+graph = [
+    "neo4j>=5.0",
+    "networkx>=3.0",
+]
+vision = [
+    "opencv-python>=4.8",
+    "pytesseract>=0.3",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-mock>=3.12",
+    "ruff>=0.4",
+    "mypy>=1.9",
+]
+
+[project.scripts]
+covid-ndd = "covid_ndd_extraction.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["covid_ndd_extraction*"]
+
+# ---------------------------------------------------------------------------
+# Ruff
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["E501"]
+
+# ---------------------------------------------------------------------------
+# Mypy
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.11"
+strict = false
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------------------
+# Pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"

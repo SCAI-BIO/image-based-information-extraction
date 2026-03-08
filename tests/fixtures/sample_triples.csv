@@ -1,0 +1,6 @@
+Image_number,Subject,Predicate,Object,Pathophysiological Process
+Image_1,SARS-CoV-2_infection,triggers,astrocyte_activation,Astrocyte_Activation
+Image_1,cytokine_storm,promotes,neuroinflammation,Astrocyte_Activation
+Image_2,SARS-CoV-2,disrupts,blood-brain_barrier,BBB_Disruption
+Image_3,ACE2_receptor,mediates,viral_entry,Viral_Entry
+Image_3,tau_protein,aggregates,neurofibrillary_tangles,Neurodegeneration

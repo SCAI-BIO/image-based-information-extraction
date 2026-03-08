@@ -1,46 +1,36 @@
-# Use official Python runtime as base image
-FROM python:3.9-slim
+# Multi-stage build — smaller final image, non-root user, data/ as volume.
 
-# Set working directory in container
-WORKDIR /app
+# ---- Stage 1: build wheel ----
+FROM python:3.11-slim AS builder
+WORKDIR /build
+COPY pyproject.toml README.md ./
+COPY covid_ndd_extraction/ covid_ndd_extraction/
+RUN pip install --no-cache-dir build && python -m build --wheel
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+# ---- Stage 2: runtime ----
+FROM python:3.11-slim
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    curl \
-    git \
+# System deps (OpenCV requires libgl; Tesseract optional)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libgl1 \
+        libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements file
-COPY requirements.txt .
+# Non-root user
+RUN useradd -m appuser
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /app
 
-# Copy the entire project
-COPY . .
+# Copy wheel from builder and install with all extras
+COPY --from=builder /build/dist/*.whl ./
+RUN pip install --no-cache-dir *.whl[graph,vision]
 
-# Create necessary directories
-RUN mkdir -p data/triples_output \
-    data/enrichment_data \
-    data/URL_relevance_analysis \
-    data/gold_standard_comparison \
-    data/prompt_engineering \
-    data/MeSh_data \
-    data/neo4j_queries \
-    data/CBM_data
+# Data directory mounted at runtime (not baked into image)
+VOLUME ["/app/data"]
 
-# Set Python path to include src directory
-ENV PYTHONPATH=/app:$PYTHONPATH
+USER appuser
 
-# Default command (opens bash for interactive use)
-CMD ["/bin/bash"]
+ENV PYTHONUNBUFFERED=1
 
-# Alternative: Uncomment below to run a specific script by default
-# CMD ["python", "src/Triple_Extraction_GPT4o.py", "--help"]
+ENTRYPOINT ["covid-ndd"]
+CMD ["--help"]
