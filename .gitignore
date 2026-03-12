@@ -1,7 +1,40 @@
-# Ignore configuration files with sensitive information
+# Sensitive configuration
+.env
+config/config.ini
 config/config.py
-.venv/
-# Ignore MeSH descriptor file
-data/MeSh_data/desc2025.xml
-__pycache__/
 
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python build artefacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.whl
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large data files (kept out of VCS)
+data/MeSh_data/desc2025.xml
+
+# Test / coverage caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
